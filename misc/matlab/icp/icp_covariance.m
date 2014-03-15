@@ -1,4 +1,3 @@
-
 function res = icp_covariance(params, current_estimate, P, valids, jindexes)
 	% res = icp_covariance(params, current_estimate, P, valids, jindexes)
 	%
@@ -52,7 +51,7 @@ function res = icp_covariance(params, current_estimate, P, valids, jindexes)
 		p_j1 = params.laser_ref.points(:,j1);
 		p_j2 = params.laser_ref.points(:,j2);
 		
-		rho_i = norm(p_i);
+		rho_i = norm(p_i);% norm gives a scalar value only
 		rho_j1 = norm(p_j1);
 		rho_j2 = norm(p_j2);
 		v_i = p_i / norm(p_i);
@@ -67,13 +66,14 @@ function res = icp_covariance(params, current_estimate, P, valids, jindexes)
 		%% who would have thought that also Matlab can be Lispy? :-)
 		
 		%% The error function is the traditional point-to-segment distance (squared)
+		%% the output of the transform function below is a point, check the function at https://github.com/AndreaCensi/csm/blob/46dafc31ba21199c3f7406f2606a44a3edc0630b/misc/matlab/utils/transform.m#L2
 		E_k = @(rho_i_, rho_j1_, rho_j2_, x_, y_, theta_) ...
 			norm(...
 				transform(v_i*rho_i_, [x_;y_;theta_])  ... 
 				- ...
 				closest_point_on_segment(v_j1*rho_j1_, v_j2*rho_j2_, ...
 					transform(v_i*rho_i_, [x_;y_;theta_])) ...
-			)^(2);
+			)^(2);%% here v_i*rho_i_ will give a point p_i..only thing is will be a single point or vector of points
 				%% first point p_i transformed by current estimate
 				%% and the closest point on the segment
 	
